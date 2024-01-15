@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
+    <title>blog</title>
+</head>
+<body>
+ 
+    <h1 class="text-center alter alert-danger">CRUD Blog with Ajax </h1>
+
+
+    <form action="" method="Post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="button" id="btnsave" value="Save">
+
+        <input type="hidden" name="stuid" id="stuid"/>
+
+    </form><br>
+
+
+    <h1>here show data form database</h1>
+    <!-- show data under code -->
+    <table  >
+        <thead >
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Update</th>
+            <th>Delete</th>
+
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          {% for x in data %}
+          <tr>
+            <td>{{ x.id }}</td>
+            <td>{{ x.title }}</td>
+            <td>{{ x.dis }}</td>
+<!-- Updated data-sid attributes -->
+          <td><input type="button" class="btn btn-warning btn-sm btn-edit" value="edit" data-sid="{{ x.id }}"></td>
+
+          <td><input type="button" class="btn btn-danger btn-sm btn-del" value="Delete" data-sid="{{ x.id }}"></td>
+
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+   <script src="{% static 'myapp/js/jquery.js' %}"></script>  
+   <script src="{% static 'myapp/js/popper.js' %}"></script>   
+   <script src="{% static 'myapp/js/bootstrap.js' %}"></script>  
+   {% include "myapp/ajax.html" %} 
+</body>
+</html>

@@ -1,0 +1,93 @@
+<script>
+    $("#btnsave").click(function (){
+        console.log("Save button clicked");
+        output = "";
+        let sid = $("#stuid").val();
+        let title = $("#id_title").val(); 
+        let dis= $("#id_dis").val();
+        
+        let csr =$("input[name=csrfmiddlewaretoken]").val();
+        
+        if (title === "") {
+            console.log("Please enter title");
+        } else if (dis === "") {
+            console.log("Enter your description");
+        } else {
+            console.log(title);
+            console.log(dis);
+            mydata = {title: title, dis: dis, stuid: sid ,csrfmiddlewaretoken: csr };
+            $.ajax({
+                url: "{% url 'save' %}",
+                method: "POST",
+                data: mydata,
+                success: function(data) {
+                    x = data.student_data;
+                    if (data.status === "Save") {
+                        console.log("Form submitted successfully");
+                        console.log(x);
+                        for (i = 0; i < x.length; i++) {
+                            output += "<tr><td>" + x[i].id + "</td><td>" + x[i].title + "</td><td>"  + x[i].dis +   "</td><td> <input type='button' class='btn btn-warning btn-sm btn-edit' value='edit' data-sid=" + x[i].id +
+                            "><input type='button' class='btn btn-danger btn-sm btn-del' value='Delete' data-sid=" + x[i].id + ">";
+                            
+                        }
+                        $("#tbody").html(output);
+                        $("#stuid").val('');
+                        $("form")[0].reset();
+                     }
+                     if (data.status === 0) {
+                        console.log("Unable to Save Form");
+                        $("#stuid").val('');
+                        $("form")[0].reset();                        
+                    }
+                }
+            });
+        }
+    });
+
+// Delete data
+$("tbody").on("click", ".btn-del", function (){
+    console.log("Delete button clicked");
+    let id = $(this).data("sid"); // Change from attr("data-sid") to data("sid")
+    let csr = $("input[name=csrfmiddlewaretoken]").val();
+
+    mydata = { sid: id, csrfmiddlewaretoken: csr };
+    mythis = this;
+    $.ajax({
+        url: "{% url 'delete' %}",
+        method: "POST",
+        data: mydata,
+        success: function (data) {
+            // console.log(data); 
+            if(data.status == 1){
+                console.log("data deleted successfuly ")
+                $(mythis).closest("tr").fadeOut();
+            }
+            if(data.status == 0){
+                console.log("data not delete successfuly ")
+            }            
+        },
+    });
+});
+
+//EDIT DATA
+$("tbody").on("click", ".btn-edit", function (){
+    console.log("Delete button clicked");
+    let id = $(this).data("sid"); // Change from attr("data-sid") to data("sid")
+    let csr = $("input[name=csrfmiddlewaretoken]").val();
+
+    mydata = { sid: id, csrfmiddlewaretoken: csr };
+    $.ajax({
+        url: "{% url 'edit' %}",
+        method: "POST",
+        data: mydata,
+        success: function (data) {
+             console.log(data);
+           $("#stuid").val(data.id)
+           $("#id_title").val(data.title)
+           $("#id_dis").val(data.dis)            
+        },
+    });
+});
+
+
+</script>
